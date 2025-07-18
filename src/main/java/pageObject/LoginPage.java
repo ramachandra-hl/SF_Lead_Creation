@@ -17,38 +17,40 @@ public class LoginPage extends Base {
     public LoginPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
         wait = new WebDriverWait(driver, Duration.ofSeconds(300));
-      //  actions = new Actions(driver);
     }
 
-@FindBy(id = "username")
+    @FindBy(id = "username")
     WebElement userNameField;
 
     @FindBy(id = "password")
     WebElement passwordField;
 
-    @ FindBy(id = "Login") WebElement loginButton;
+    @FindBy(id = "Login")
+    WebElement loginButton;
 
     public void enterUsername(String username) {
         userNameField.sendKeys(username);
         System.out.println(username + " is entered in the username field.");
         try {
-            Thread.sleep(2000); // Adding sleep to wait for any potential loading or processing
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
     public void enterPassword(String password) {
         passwordField.sendKeys(password);
         System.out.println(password + " is entered in the password field.");
         try {
-            Thread.sleep(2000); // Adding sleep to wait for any potential loading or processing
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }
+
     public void clickLoginButton() {
         try {
-            Thread.sleep(2000); // Adding sleep to wait for any potential loading or processing
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

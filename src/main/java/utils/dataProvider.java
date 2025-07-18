@@ -1,39 +1,33 @@
-package testDataProvider;
+package utils;
 
 import org.testng.annotations.DataProvider;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.*;
 
-public class TestDataProvider {
+public class dataProvider {
 
     @DataProvider(name = "leadDataProvider")
     public static Object[][] provideLeadData() {
-        String csvFile = "testData/Lead_Data.csv";
+        String yamlFile = "testData/meetingDetails.yml";
         List<Map<String, String>> dataList = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
-            String[] headers = br.readLine().split(",");
-            String line;
-
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(",", -1);
+        Yaml yaml = new Yaml();
+        try (InputStream inputStream = new FileInputStream(yamlFile)) {
+            Object loaded = yaml.load(inputStream);
+            if (loaded instanceof Map) {
                 Map<String, String> dataMap = new HashMap<>();
-                for (int i = 0; i < headers.length; i++) {
-                    dataMap.put(headers[i], values[i]);
-                }
+                ((Map<?, ?>) loaded).forEach((k, v) -> dataMap.put(String.valueOf(k), String.valueOf(v)));
                 dataList.add(dataMap);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         Object[][] result = new Object[dataList.size()][1];
         for (int i = 0; i < dataList.size(); i++) {
             result[i][0] = dataList.get(i);
         }
-
         return result;
     }
 }

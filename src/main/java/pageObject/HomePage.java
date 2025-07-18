@@ -1,7 +1,6 @@
 package pageObject;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -12,12 +11,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 public class HomePage {
     WebDriver driver;
     WebDriverWait wait;
-    Actions actions;
-
     public HomePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -26,14 +24,14 @@ public class HomePage {
 
     @FindBy(xpath = "(//div[@class='slds-context-bar__label-action slds-p-left_none'])[3]")
     WebElement LeadsTab;
-@FindBy(xpath = "(//span[contains(@class,'slds-truncate')])[7]")
+    @FindBy(xpath = "(//span[contains(@class,'slds-truncate')])[7]")
     WebElement LeadsTabDropdown;
-@FindBy(xpath = "(//span[contains(@class,'slds-radio--faux')])[2]")
-        WebElement DCSalesManagerRadioButton;
-@FindBy(xpath = "(//button[contains(@class,'slds-button slds-button_neutral slds-button slds-button_brand uiButton')])[1]")
+    @FindBy(xpath = "(//span[contains(@class,'slds-radio--faux')])[2]")
+    WebElement DCSalesManagerRadioButton;
+    @FindBy(xpath = "(//button[contains(@class,'slds-button slds-button_neutral slds-button slds-button_brand uiButton')])[1]")
     WebElement nextButton;
-@FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Type__c']//lightning-base-combobox[@class='slds-combobox_container']")
-WebElement meetingTypeDropdown;
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Type__c']//lightning-base-combobox[@class='slds-combobox_container']")
+    WebElement meetingTypeDropdown;
 
     @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Venue__c']//button")
     WebElement meetingVenueDropdownButton;
@@ -59,7 +57,7 @@ WebElement meetingTypeDropdown;
     @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='Email']")
     WebElement emailInput;
 
-    @FindBy(xpath ="//div[@class='slds-form-element__control slds-grow']//input[@name='MobilePhone']")
+    @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='MobilePhone']")
     WebElement mobilePhoneInput;
 
     @FindBy(xpath = "//button[@aria-label='View all dependencies for Channel']")
@@ -67,9 +65,6 @@ WebElement meetingTypeDropdown;
 
     @FindBy(xpath = "//button[normalize-space()='Apply']")
     WebElement applyButton;
-
-
-
 
 
     public void clickLeadsTab() {
@@ -164,7 +159,6 @@ WebElement meetingTypeDropdown;
         inputBox.sendKeys(designUser);
         System.out.println("Typed Design User: " + designUser);
 
-        // Wait briefly to allow options to load
         try {
             Thread.sleep(1000);  // You can replace with WebDriverWait if the DOM updates properly
         } catch (InterruptedException e) {
@@ -175,7 +169,7 @@ WebElement meetingTypeDropdown;
 
         if (options.isEmpty()) {
             System.out.println("⚠️ No matching options available in dropdown for: " + designUser);
-            return; // Exit gracefully or throw exception based on your test logic
+            return;
         }
 
         boolean found = false;
@@ -215,6 +209,7 @@ WebElement meetingTypeDropdown;
         emailInput.sendKeys(email);
         System.out.println("Email is entered: " + email);
     }
+
     public void enterMobilePhone(String mobilePhone) {
         pageLoaded();
         mobilePhoneInput.click();
@@ -272,10 +267,19 @@ WebElement meetingTypeDropdown;
         System.out.println("Apply button is clicked.");
     }
 
-
-
-
-
+    public void clickSaveButton() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        List<WebElement> allSaveButtons = driver.findElements(By.xpath("//button[@name='SaveEdit' or text()='Save' or contains(@class,'slds-button_brand')]"));
+        for (WebElement button : allSaveButtons) {
+            System.out.println("Button text: " + button.getText());
+            if (button.getText().equals("Save") && Objects.equals(button.getAttribute("name"), "SaveEdit")) {
+                System.out.println("Matching Save button found: " + button.getText());
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+                break;
+            }
+        }
+        System.out.println("Save button clicked.");
+    }
 
     private void pageLoaded() {
         try {
@@ -284,6 +288,5 @@ WebElement meetingTypeDropdown;
             throw new RuntimeException(e);
         }
     }
-
 }
 
