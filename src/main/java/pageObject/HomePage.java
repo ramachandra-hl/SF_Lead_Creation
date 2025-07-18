@@ -272,6 +272,20 @@ WebElement meetingTypeDropdown;
         System.out.println("Apply button is clicked.");
     }
 
+    public void clickSaveButton() {
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        List<WebElement> allSaveButtons = driver.findElements(By.xpath("//button[@name='SaveEdit' or text()='Save' or contains(@class,'slds-button_brand')]"));
+       for (WebElement button : allSaveButtons) {
+            System.out.println("Button text: " + button.getText());
+            if (button.getText().equals("Save") && button.getAttribute("name").equals("SaveEdit")) {
+                System.out.println("Matching Save button found: " + button.getText());
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", button);
+                break;
+            }
+        }
+            System.out.println("Save button clicked.");
+    }
+
 
 
 
