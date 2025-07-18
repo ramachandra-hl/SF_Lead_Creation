@@ -1,0 +1,289 @@
+package pageObject;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class HomePage {
+    WebDriver driver;
+    WebDriverWait wait;
+    Actions actions;
+
+    public HomePage(WebDriver driver) {
+        this.driver = driver;
+        PageFactory.initElements(driver, this);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(300));
+    }
+
+    @FindBy(xpath = "(//div[@class='slds-context-bar__label-action slds-p-left_none'])[3]")
+    WebElement LeadsTab;
+@FindBy(xpath = "(//span[contains(@class,'slds-truncate')])[7]")
+    WebElement LeadsTabDropdown;
+@FindBy(xpath = "(//span[contains(@class,'slds-radio--faux')])[2]")
+        WebElement DCSalesManagerRadioButton;
+@FindBy(xpath = "(//button[contains(@class,'slds-button slds-button_neutral slds-button slds-button_brand uiButton')])[1]")
+    WebElement nextButton;
+@FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Type__c']//lightning-base-combobox[@class='slds-combobox_container']")
+WebElement meetingTypeDropdown;
+
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Venue__c']//button")
+    WebElement meetingVenueDropdownButton;
+
+    @FindBy(xpath = "//div[contains(@data-target-selection-name,'sfdc:RecordField.Lead.Approx_Budget__c')]//lightning-base-combobox[@class='slds-combobox_container']")
+    WebElement approxBudgetDropdown;
+
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Willingness_For_Meeting__c']//div[@class='slds-form-element__control slds-input-has-icon slds-input-has-icon_right']")
+    WebElement meetingDateInput;
+
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Willingness_For_Meeting__c']//lightning-base-combobox[@class='slds-combobox_container']")
+    WebElement meetingTimeInput;
+
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Design_User__c']//span[@class='test-id__field-value slds-size_1-of-1']//div[@class='slds-form-element__control']")
+    WebElement designUserDropdown;
+
+    @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='city']")
+    WebElement cityInput;
+
+    @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='lastName']")
+    WebElement lastNameInput;
+
+    @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='Email']")
+    WebElement emailInput;
+
+    @FindBy(xpath ="//div[@class='slds-form-element__control slds-grow']//input[@name='MobilePhone']")
+    WebElement mobilePhoneInput;
+
+    @FindBy(xpath = "//button[@aria-label='View all dependencies for Channel']")
+    WebElement viewAllDependenciesButton;
+
+    @FindBy(xpath = "//button[normalize-space()='Apply']")
+    WebElement applyButton;
+
+
+
+
+
+    public void clickLeadsTab() {
+        pageLoaded();
+        LeadsTab.click();
+        System.out.println("Leads tab is clicked.");
+    }
+
+    public void clickLeadsTabDropdown() {
+        pageLoaded();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", LeadsTabDropdown);
+        System.out.println("Leads tab dropdown is clicked.");
+    }
+
+    public void clickDCSalesManagerRadioButton() {
+        pageLoaded();
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].click();", DCSalesManagerRadioButton);
+        System.out.println("DCSalesManagerRadioButton is clicked.");
+    }
+
+    public void clickNextButton() {
+        nextButton.click();
+        System.out.println("Next button is clicked.");
+    }
+
+    public void clickMeetingTypeDropdown() {
+        pageLoaded();
+        meetingTypeDropdown.click();
+        System.out.println("Meeting Type dropdown is clicked.");
+    }
+
+    public void clickMeetingVenueDropdown() {
+
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", meetingVenueDropdownButton);
+        js.executeScript("arguments[0].click();", meetingVenueDropdownButton);
+        System.out.println("Meeting Venue dropdown is clicked.");
+        try {
+            Thread.sleep(2000); // Adding sleep to wait for any potential loading or processing
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void clickApproxBudgetDropdown() {
+        pageLoaded();
+        approxBudgetDropdown.click();
+        System.out.println("Approx Budget dropdown is clicked.");
+    }
+
+    public void selectDropdownOptionByText(String optionText) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
+                By.xpath("//*[normalize-space(text())='" + optionText + "']")));
+
+        option.click();
+    }
+
+    public void enterMeetingDate() {
+        pageLoaded();
+        LocalDate currentDate = LocalDate.now();
+        String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")); // or "dd/MM/yyyy"
+
+        // Format the time 30 minutes ahead
+        LocalTime futureTime = LocalTime.now().plusMinutes(30);
+        String formattedTime = futureTime.format(DateTimeFormatter.ofPattern("hh:mm a")); // e.g., "03:30 PM"
+        meetingDateInput.click();  // Activate the field
+        meetingDateInput.sendKeys(formattedDate);
+        System.out.println("Meeting date is entered: " + formattedDate);
+        meetingTimeInput.click(); // Focus the field
+        meetingTimeInput.sendKeys(Keys.chord(Keys.CONTROL, "a")); // Select all
+        meetingTimeInput.sendKeys(Keys.DELETE);                   // Delete selected
+        meetingTimeInput.sendKeys(formattedTime);
+        System.out.println("Meeting time is entered: " + formattedTime);
+    }
+
+    public void clickDesignUserDropdown(String designUser) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+
+        // Scroll into view and click the dropdown
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", designUserDropdown);
+        wait.until(ExpectedConditions.elementToBeClickable(designUserDropdown)).click();
+        System.out.println("Clicked on Design User dropdown.");
+
+        // Input the search term
+        WebElement inputBox = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[@data-target-selection-name='sfdc:RecordField.Lead.Design_User__c']//input[contains(@class,'slds-combobox__input')]")
+        ));
+        inputBox.clear();
+        inputBox.sendKeys(designUser);
+        System.out.println("Typed Design User: " + designUser);
+
+        // Wait briefly to allow options to load
+        try {
+            Thread.sleep(1000);  // You can replace with WebDriverWait if the DOM updates properly
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        List<WebElement> options = driver.findElements(By.xpath("//lightning-base-combobox-item"));
+
+        if (options.isEmpty()) {
+            System.out.println("⚠️ No matching options available in dropdown for: " + designUser);
+            return; // Exit gracefully or throw exception based on your test logic
+        }
+
+        boolean found = false;
+        for (WebElement option : options) {
+            String text = option.getText().trim();
+            if (text.equalsIgnoreCase(designUser)) {
+                wait.until(ExpectedConditions.elementToBeClickable(option)).click();
+                System.out.println("✅ Selected option: " + text);
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            System.out.println("❌ Matching option not found. Available options:");
+            for (WebElement option : options) {
+                System.out.println(" - " + option.getText().trim());
+            }
+        }
+    }
+
+    public void enterCity(String city) {
+        pageLoaded();
+        cityInput.sendKeys(city);
+        System.out.println("City is entered: " + city);
+    }
+
+    public void enterLastName(String lastName) {
+        pageLoaded();
+        lastNameInput.sendKeys(lastName);
+        System.out.println("Last Name is entered: " + lastName);
+    }
+
+    public void enterEmail(String email) {
+        pageLoaded();
+        emailInput.click();
+        emailInput.sendKeys(email);
+        System.out.println("Email is entered: " + email);
+    }
+    public void enterMobilePhone(String mobilePhone) {
+        pageLoaded();
+        mobilePhoneInput.click();
+        mobilePhoneInput.sendKeys(mobilePhone);
+        System.out.println("Mobile Phone is entered: " + mobilePhone);
+    }
+
+    public void clickViewAllDependenciesButton() {
+        pageLoaded();
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", viewAllDependenciesButton);
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", viewAllDependenciesButton);
+        System.out.println("View All Dependencies button is clicked.");
+    }
+
+    public void clickChannelDropdown() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement dropdownButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[@name='Channel__c' and @role='combobox']")));
+        dropdownButton.click();
+        WebElement optionOnline = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@title='Online']")));
+        optionOnline.click();
+    }
+
+    public void clickSource() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement label = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//button[@name='Source__c' and @role='combobox']")));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", label);
+        WebElement optionOnline = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@title='Paid']")));
+        optionOnline.click();
+    }
+
+    public void clickCampaignSource() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement label = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//button[@name='DC_Campaign_Source__c' and @role='combobox']")));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", label);
+        WebElement optionOnline = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@title='Google AdWords']")));
+        optionOnline.click();
+    }
+
+    public void clickLeadSource() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        WebElement label = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//button[@name='DC_Lead_Source__c' and @role='combobox']")));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", label);
+        WebElement optionOnline = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//span[@title='Google Search Ads']")));
+        optionOnline.click();
+    }
+
+    public void clickApplyButton() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement applyButtonElement = wait.until(ExpectedConditions.elementToBeClickable(applyButton));
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", applyButtonElement);
+        System.out.println("Apply button is clicked.");
+    }
+
+
+
+
+
+
+    private void pageLoaded() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+}
+
