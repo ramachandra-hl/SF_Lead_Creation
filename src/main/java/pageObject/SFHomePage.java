@@ -1,7 +1,6 @@
 package pageObject;
 
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -13,12 +12,10 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-public class HomePage {
+public class SFHomePage {
     WebDriver driver;
     WebDriverWait wait;
-    Actions actions;
-
-    public HomePage(WebDriver driver) {
+    public SFHomePage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
         wait = new WebDriverWait(driver, Duration.ofSeconds(300));
@@ -26,14 +23,14 @@ public class HomePage {
 
     @FindBy(xpath = "(//div[@class='slds-context-bar__label-action slds-p-left_none'])[3]")
     WebElement LeadsTab;
-@FindBy(xpath = "(//span[contains(@class,'slds-truncate')])[7]")
+    @FindBy(xpath = "(//span[contains(@class,'slds-truncate')])[7]")
     WebElement LeadsTabDropdown;
-@FindBy(xpath = "(//span[contains(@class,'slds-radio--faux')])[2]")
-        WebElement DCSalesManagerRadioButton;
-@FindBy(xpath = "(//button[contains(@class,'slds-button slds-button_neutral slds-button slds-button_brand uiButton')])[1]")
+    @FindBy(xpath = "(//span[contains(@class,'slds-radio--faux')])[2]")
+    WebElement DCSalesManagerRadioButton;
+    @FindBy(xpath = "(//button[contains(@class,'slds-button slds-button_neutral slds-button slds-button_brand uiButton')])[1]")
     WebElement nextButton;
-@FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Type__c']//lightning-base-combobox[@class='slds-combobox_container']")
-WebElement meetingTypeDropdown;
+    @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Type__c']//lightning-base-combobox[@class='slds-combobox_container']")
+    WebElement meetingTypeDropdown;
 
     @FindBy(xpath = "//div[@data-target-selection-name='sfdc:RecordField.Lead.Meeting_Venue__c']//button")
     WebElement meetingVenueDropdownButton;
@@ -59,7 +56,7 @@ WebElement meetingTypeDropdown;
     @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='Email']")
     WebElement emailInput;
 
-    @FindBy(xpath ="//div[@class='slds-form-element__control slds-grow']//input[@name='MobilePhone']")
+    @FindBy(xpath = "//div[@class='slds-form-element__control slds-grow']//input[@name='MobilePhone']")
     WebElement mobilePhoneInput;
 
     @FindBy(xpath = "//button[@aria-label='View all dependencies for Channel']")
@@ -175,7 +172,7 @@ WebElement meetingTypeDropdown;
 
         if (options.isEmpty()) {
             System.out.println("⚠️ No matching options available in dropdown for: " + designUser);
-            return; // Exit gracefully or throw exception based on your test logic
+            return;
         }
 
         boolean found = false;
@@ -287,6 +284,33 @@ WebElement meetingTypeDropdown;
     }
 
 
+     public String clickRoasterLink() {
+        pageLoaded();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+        WebElement roasterLink = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(@href, 'https://dc-rosters-preprod.homelane.com')]")));
+        String roasterLinkText = roasterLink.getText();
+        System.out.println("Roaster link : " + roasterLinkText);
+        String[] parts = roasterLinkText.split("/");
+        String userId = parts[parts.length - 1];
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", roasterLink);
+        System.out.println("Roaster link is clicked.");
+        pageLoaded();
+        return userId;
+      }
+
+    public  void switchToWindowByTitleOrUrl(String partialMatch) {
+        for (String windowHandle : driver.getWindowHandles()) {
+            driver.switchTo().window(windowHandle);
+            String currentTitle = driver.getTitle();
+            String currentUrl = driver.getCurrentUrl();
+
+            if (currentTitle.contains(partialMatch) || currentUrl.contains(partialMatch)) {
+                System.out.println("Switched to window: " + currentTitle);
+            }
+        }
+        System.out.println("No window found with keyword: " + partialMatch);
+    }
 
 
 
